@@ -1,0 +1,229 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SwasthDHF/Supply-Discovery/1.0.0
+info:
+  description: API to enable asyncronous discovery of Medical supplies - V1 focuses on O2 supply discovery
+  version: "1.0.0"
+  title: Medical Supply Dicovery API 
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Provider APIs
+    description: APIs to be used by Provider side
+  - name: App APIs
+    description: APIs to be used by End User side apps
+paths:
+  /register/provider:
+    post:
+      tags:
+        - Provider APIs
+      responses:
+        '200':
+          description: Returns a success
+          content:
+            '*/*':
+              schema:
+                type: object
+                description: ack.body.message.id to contain system genearted provider id
+                properties:
+                  ack:
+                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+      requestBody:
+        description: Register a new Provider ( HSP )
+        required: true 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                header:
+                  allOf:
+                  - $ref: '#/components/schemas/header'
+                message:
+                  type : object
+                  properties:
+                    provider:
+                      $ref: '#/components/schemas/provider'
+                      
+  /search/service:
+    post:
+      tags:
+        - App APIs
+      responses:
+        '200':
+          description: Returns a success
+          content:
+            '*/*':
+              schema:
+                type: object
+                description: ack.body.message.id to contain system genearted unique search id
+                properties:
+                  ack:
+                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                header:
+                  allOf:
+                  - $ref: '#/components/schemas/header'
+                message:
+                  type: object
+                  properties:
+                    intent:
+                      oneOf:
+                        - $ref: '#/components/schemas/o2_intent'
+        description: Search the HSPs for a matching set of providers
+        required: true
+        
+  /on_search/service:
+    post:
+      tags:
+        - Provider APIs
+      responses:
+        '200':
+          description: Returns a success
+          content:
+            '*/*':
+              schema:
+                type: object
+                description: ack.body.message.id to contain system genearted search id
+                properties:
+                  ack:
+                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                header:
+                  $ref: '#/components/schemas/header'
+                services:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/o2_service'
+        description: >-
+          Call back function when the search listing is prepared by the HSP or gateway
+        required: true
+
+components:
+  schemas:
+    header:
+      type: object
+      properties:
+        authtoken:
+          type: string
+        signature:
+          type: string
+        callbackurl:
+          type: string
+        caller:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - provider
+                - app
+                - gateway
+            id:
+              type: string
+    
+    provider:
+      type: object
+      required:
+        - name
+        - contact
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          readOnly: true
+        name:
+          type: string
+          example: ABC Limited
+        homePage:
+          type: string
+          format: url
+          example: 'https://www.acme-corp.com'
+        contact:
+          type: object
+          required:
+            - mobile
+          properties:
+            email:
+              type: string
+              format: email
+            mobile:
+              type: string
+              example: 9876598765
+              format: 'd{10}'
+            phone:
+              type: string
+              description: telephone with std code in stdcode-phonenumberxextension format
+              example: (080)-23452345x123
+        located_at:
+          $ref: '#/components/schemas/location'
+              
+    location:
+      type: object
+      description: defines the location of the entity
+      required:
+        - pin_code
+      properties:
+        pin_code:
+          type: string
+          format: 'd{6}'
+        city:
+          type: object
+          properties:
+            name:
+              type: string
+            code:
+              type: string
+              description: in the current implemntation this can be STD code of the city
+        address:
+          type: object
+          description: adderss within the city
+          properties:
+            door:
+              type: string
+            building:
+              type: string
+            area: 
+              type: string
+              
+    o2_intent:
+      type: object
+      description: search parameyers for O2 dsicovery
+      properties:
+        location: 
+          $ref: '#/components/schemas/location'
+          
+    o2_service:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e-d701748f0851
+          readOnly: true
+        type:
+          type : string
+          description: type of oxygen offered, ask Urvi to help with values
+          enum:
+          - type1
+          - type2
+        expires_at:
+          $ref: 'https://schema.beckn.org/core/schema/0.7.1/time.json'
+        provider:
+          $ref: '#/components/schemas/provider/properties/id'
