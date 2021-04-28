@@ -212,7 +212,7 @@ components:
           format: uuid
           example: d290f1ee-6c54-4b01-90e6-d701748f0851
           readOnly: true
-        type:
+        status:
           type: string
           enum:
             - ACTIVE
@@ -294,7 +294,7 @@ components:
           readOnly: true
         type:
           type : string
-          description: type of oxygen offered, ask Urvi to help with values
+          description: type of oxygen offered, ask Urvi to help with values - below list is dummy!
           enum:
           - type1
           - type2
