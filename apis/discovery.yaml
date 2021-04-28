@@ -274,7 +274,7 @@ components:
               
     o2_intent:
       type: object
-      description: search parameyers for O2 dsicovery
+      description: search parameters for O2 discovery
       properties:
         location: 
           $ref: '#/components/schemas/location'
@@ -283,6 +283,11 @@ components:
       type: object
       properties:
         id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e-d701748f0851
+          readOnly: true
+        search_id:
           type: string
           format: uuid
           example: d290f1ee-6c54-4b01-90e-d701748f0851
@@ -304,6 +309,10 @@ components:
         - usable
       description: Feedback on usability of bot service
       properties:
+        search_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e-d701748f0851
         usable: 
           type: boolean
           default: true
