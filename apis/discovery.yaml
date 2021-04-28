@@ -50,6 +50,38 @@ paths:
                     provider:
                       $ref: '#/components/schemas/provider'
                       
+  /update/provider:
+    post:
+      tags:
+        - Provider APIs
+      responses:
+        '200':
+          description: Returns a success
+          content:
+            '*/*':
+              schema:
+                type: object
+                description: ack.body.message.id to contain system genearted provider id
+                properties:
+                  ack:
+                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+      requestBody:
+        description: Register a new Provider ( HSP )
+        required: true 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                header:
+                  allOf:
+                  - $ref: '#/components/schemas/header'
+                message:
+                  type : object
+                  properties:
+                    provider:
+                      $ref: '#/components/schemas/provider'
+                      
   /search/service:
     post:
       tags:
@@ -113,6 +145,38 @@ paths:
         description: >-
           Call back function when the search listing is prepared by the HSP or gateway
         required: true
+        
+  /register/feedback:
+    post:
+      tags:
+        - App APIs
+      responses:
+        '200':
+          description: Returns a success
+          content:
+            '*/*':
+              schema:
+                type: object
+                description: ack.body.message.id to contain system genearted feedback id
+                properties:
+                  ack:
+                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+      requestBody:
+        description: Register feedback
+        required: true 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                header:
+                  allOf:
+                  - $ref: '#/components/schemas/header'
+                message:
+                  type : object
+                  properties:
+                    provider:
+                      $ref: '#/components/schemas/feedback'
 
 components:
   schemas:
@@ -148,6 +212,12 @@ components:
           format: uuid
           example: d290f1ee-6c54-4b01-90e6-d701748f0851
           readOnly: true
+        type:
+          type: string
+          enum:
+            - ACTIVE
+            - PAUSED
+            - INACTIVE
         name:
           type: string
           example: ABC Limited
@@ -225,5 +295,31 @@ components:
           - type2
         expires_at:
           $ref: 'https://schema.beckn.org/core/schema/0.7.1/time.json'
+        provider:
+          $ref: '#/components/schemas/provider/properties/id'
+    
+    feedback:
+      type: object
+      required: 
+        - usable
+      description: Feedback on usability of bot service
+      properties:
+        usable: 
+          type: boolean
+          default: true
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        reason:
+          type: string
+          enum:
+            - NOT_REQUIRED
+            - NOT_RESPONSIVE
+            - QUALITY
+            - PRICE
+        additional:
+          type: string
+          maximum: 1024
         provider:
           $ref: '#/components/schemas/provider/properties/id'
