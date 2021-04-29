@@ -33,7 +33,7 @@ paths:
                 description: ack.body.message.id to contain system genearted provider id
                 properties:
                   ack:
-                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+                    $ref: '#/components/schemas/ack'
       requestBody:
         description: Register a new Provider ( HSP )
         required: true 
@@ -63,10 +63,10 @@ paths:
             '*/*':
               schema:
                 type: object
-                description: ack.body.message.id to contain system genearted provider id
+                description: ack.message to contain system genearted provider id
                 properties:
                   ack:
-                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+                    $ref: '#/components/schemas/ack'
       requestBody:
         description: Register a new Provider ( HSP )
         required: true 
@@ -96,10 +96,10 @@ paths:
             '*/*':
               schema:
                 type: object
-                description: ack.body.message.id to contain system genearted unique search id
+                description: ack.message to contain system genearted unique search id
                 properties:
                   ack:
-                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+                    $ref: '#/components/schemas/ack'
       requestBody:
         content:
           application/json:
@@ -120,7 +120,7 @@ paths:
         
   /on_search/service:
     post:
-      description: API to respond to a received serach intent - when a provider accpets the request to serve a particular search intent. This API may be called multiple times for each search intend depending on how many providers respond to the intent.  
+      description: API to respond to a received search intent - when a provider accpets the request to serve a particular search intent. This API may be called multiple times for each search intend depending on how many providers respond to the intent.  
       tags:
         - Provider APIs
       responses:
@@ -130,10 +130,10 @@ paths:
             '*/*':
               schema:
                 type: object
-                description: ack.body.message.id to contain system genearted search id
+                description: ack.message to contain system genearted search id
                 properties:
                   ack:
-                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+                    $ref: '#/components/schemas/ack'
       requestBody:
         content:
           application/json:
@@ -152,6 +152,7 @@ paths:
         
   /register/feedback:
     post:
+      description: API to register user feedback. At this point the API is designed 
       tags:
         - App APIs
       responses:
@@ -161,10 +162,10 @@ paths:
             '*/*':
               schema:
                 type: object
-                description: ack.body.message.id to contain system genearted feedback id
+                description: ack.message to contain system genearted feedback id
                 properties:
                   ack:
-                    $ref: 'http://schema.beckn.org/core/schema/0.7.1/ack.json'
+                    $ref: '#/components/schemas/ack'
       requestBody:
         description: Register feedback
         required: true 
@@ -210,6 +211,25 @@ components:
             id:
               description: EUA or HSP's regsitered ID
               type: string
+              
+    ack:
+      type: object
+      properties:
+        code: 
+          description: namespaced message code on success
+          type: string
+        message: 
+          type: string
+        error:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                description: namespaced error code
+                type: string
+              message:
+                type: string
     
     provider:
       type: object
@@ -290,13 +310,17 @@ components:
           $ref: '#/components/schemas/location'
         type:
           type : string
-          description: type of oxygen offered, ask Urvi to help with values - below list is dummy!
+          description: type of oxygen needed, leave blank for any type
           enum:
           - TYPE_B
           - TYPE_D
           
     o2_service:
       type: object
+      required: 
+       - search_id
+       - status
+       - provider
       properties:
         id:
           type: string
@@ -309,12 +333,13 @@ components:
           example: d290f1ee-6c54-4b01-90e-d701748f0851
         type:
           type : string
-          description: type of oxygen offered, ask Urvi to help with values - below list is dummy!
+          description: type of oxygen offered, leave blank for any type
           enum:
           - TYPE_B
           - TYPE_D
         expires_at:
-          $ref: 'https://schema.beckn.org/core/schema/0.7.1/time.json'
+          type: string
+          format: date_time
         status: 
           type: string
           enum:
