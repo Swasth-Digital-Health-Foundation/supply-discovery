@@ -304,8 +304,15 @@ components:
               
     o2_intent:
       type: object
+      required: 
+        - mobile
+        - location
       description: search parameters for O2 discovery
       properties:
+        mobile:
+          type: string
+          example: 9876598765
+          format: 'd{10}'
         location: 
           $ref: '#/components/schemas/location'
         type:
@@ -321,6 +328,7 @@ components:
        - search_id
        - status
        - provider
+       - mobile
       properties:
         id:
           type: string
@@ -345,6 +353,10 @@ components:
           enum:
             - ACCEPTED
             - REJECTED
+        mobile:
+          type: string
+          example: 9876598765
+          format: 'd{10}'
         provider:
           $ref: '#/components/schemas/provider/properties/id'
     
@@ -352,6 +364,7 @@ components:
       type: object
       required: 
         - usable
+        - mobile
       description: Feedback on usability of bot service
       properties:
         search_id:
@@ -361,6 +374,10 @@ components:
         usable: 
           type: boolean
           default: true
+        mobile:
+          type: string
+          example: 9876598765
+          format: 'd{10}'
         rating:
           type: integer
           minimum: 1
