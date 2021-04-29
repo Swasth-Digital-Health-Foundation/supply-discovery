@@ -20,6 +20,7 @@ tags:
 paths:
   /register/provider:
     post:
+      description: API to register a new provider with the system
       tags:
         - Provider APIs
       responses:
@@ -52,6 +53,7 @@ paths:
                       
   /update/provider:
     post:
+      description: API to update provider information. One of the key usage would be to pause/unpause a provider by allowing to toggle the status between ACTIVE/PAUSED
       tags:
         - Provider APIs
       responses:
@@ -84,6 +86,7 @@ paths:
                       
   /search/service:
     post:
+      description: API to initiate discovery request from end user. This will send the intent to the providers qualified to recieve (e.g. in O2 case it can be the providers within certain range of the provided location)
       tags:
         - App APIs
       responses:
@@ -117,6 +120,7 @@ paths:
         
   /on_search/service:
     post:
+      description: API to respond to a received serach intent - when a provider accpets the request to serve a particular search intent. This API may be called multiple times for each search intend depending on how many providers respond to the intent.  
       tags:
         - Provider APIs
       responses:
@@ -184,21 +188,27 @@ components:
       type: object
       properties:
         authtoken:
+          description: API key for the authorisation. Same as what is passed in bearer token. Carried here to support non HTTP asynchronous processing protocols 
           type: string
         signature:
+          description: Signature of message content to validate its authenticity 
           type: string
         callbackurl:
+          description: Callback URL to send the further responses in case of asynch processing. Can be used as status listener. 
           type: string
         caller:
+          description: details about the caller. 
           type: object
           properties:
             type:
               type: string
+              description: Choose proder if calling on behalf of service provider, choose app if calling on behalf of User, choose gateway if calling as a gateway
               enum:
                 - provider
                 - app
                 - gateway
             id:
+              description: EUA or HSP's regsitered ID
               type: string
     
     provider:
@@ -278,6 +288,12 @@ components:
       properties:
         location: 
           $ref: '#/components/schemas/location'
+        type:
+          type : string
+          description: type of oxygen offered, ask Urvi to help with values - below list is dummy!
+          enum:
+          - TYPE_B
+          - TYPE_D
           
     o2_service:
       type: object
@@ -291,15 +307,19 @@ components:
           type: string
           format: uuid
           example: d290f1ee-6c54-4b01-90e-d701748f0851
-          readOnly: true
         type:
           type : string
           description: type of oxygen offered, ask Urvi to help with values - below list is dummy!
           enum:
-          - type1
-          - type2
+          - TYPE_B
+          - TYPE_D
         expires_at:
           $ref: 'https://schema.beckn.org/core/schema/0.7.1/time.json'
+        status: 
+          type: string
+          enum:
+            - ACCEPTED
+            - REJECTED
         provider:
           $ref: '#/components/schemas/provider/properties/id'
     
